@@ -15,6 +15,7 @@ class Artist(models.Model):
 
 class Song(models.Model):
     title = models.CharField(max_length=300, db_index=True)
+    # 歌手与歌曲是一对多关系，删除歌手时会级联删除其所有歌曲
     artist = models.ForeignKey(
         Artist,
         on_delete=models.CASCADE,
@@ -37,9 +38,12 @@ class Comment(models.Model):
     body = models.TextField(max_length=1000)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # 规定排序方式
     class Meta:
         ordering = ["-created_at"]
 
+    # 对象简略显示时只取前30个字符
     def __str__(self) -> str:
-        return self.body[:30]
-
+        if len(self.body) > 30:
+            return self.body[:30] + "..."
+        return self.body

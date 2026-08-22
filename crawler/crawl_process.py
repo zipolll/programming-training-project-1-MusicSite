@@ -1,5 +1,6 @@
 # 酷我音乐具体爬取过程
 
+from pypinyin import lazy_pinyin
 from urllib.parse import quote, urlencode
 
 from .config import (
@@ -98,8 +99,13 @@ def crawl_artist_info(artist_id: str, prefix: str) -> dict:
     introduction_html = fetch(introduction_url, introduction_cache)
 
     artist = parse_artist(artist_id, detail_html, introduction_html)
+    
+    if not prefix and artist["name"]:
+        prefix = lazy_pinyin(artist["name"])[0][0].upper() # 指定url爬取模式下更新prefix
     artist["prefix"] = prefix
+
     return artist
+
 
 
 def crawl_artist_songs(
