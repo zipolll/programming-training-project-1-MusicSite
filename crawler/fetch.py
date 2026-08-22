@@ -30,7 +30,7 @@ def fetch(url: str, cache_path: Path) -> dict | str:
     )
     time.sleep(wait_seconds)
 
-    headers = {"User-Agent": UserAgent().random} # 使用随机 User-Agent 模拟浏览器请求
+    headers = {"User-Agent": UserAgent(platforms="desktop").random} # 使用随机 User-Agent 模拟浏览器请求
     response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT_SECONDS)
     response.raise_for_status() # 如果响应状态码不是 200，则抛出异常
 
@@ -41,7 +41,7 @@ def fetch(url: str, cache_path: Path) -> dict | str:
             json.dump(data, file, ensure_ascii=False, indent=2) # 将 Python 对象 data 序列化为 JSON 格式，并直接写入刚才打开的 file 中
         return data
 
-    # 不是 JSON 文件，直接保存为文本文件
+    # 不是 JSON 文件（则应该是html），直接保存为文本文件
     response.encoding = "utf-8"
     cache_path.write_text(response.text, encoding="utf-8")
     return response.text

@@ -55,7 +55,7 @@ def show_artist(data: dict, artist_id: str) -> None:
     for song in selected_songs[:SONGS_PER_ARTIST]:
         print(f"- {song['title']} ({song['album']})")
         for comment in song["source_comments"]:
-            print(f"  {comment['created_at']}  {comment['content']}")
+            print(f"{comment['created_at']}")
 
 
 def main() -> None:
@@ -63,7 +63,7 @@ def main() -> None:
     data = load_json(KUWO_OUTPUT_PATH) # 把json文件内容解析为Python对象并返回
     completed_artist_ids = {
         str(artist_id) for artist_id in data["completed_artist_ids"]
-    }
+    } # 不能通过检索来获得，可能加入了仅个人信息但未统计完毕
     saved_song_ids = {str(song["external_id"]) for song in data["songs"]}
 
     artist_url = input("请输入酷我歌手主页 URL，直接回车则继续完整爬取: ").strip()

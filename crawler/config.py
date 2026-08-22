@@ -9,10 +9,8 @@ KUWO_OUTPUT_PATH = PROJECT_ROOT / "data" / "processed" / "kuwo.json" # 获取酷
 
 
 KUWO_ARTIST_LIST_URL = "https://wapi.kuwo.cn/api/www/artist/artistInfo"
-KUWO_ARTIST_DETAIL_URL = "https://kuwo.cn/newh5/artist/artistDetail?id={artist_id}"
-KUWO_ARTIST_INTRO_URL = "https://m.kuwo.cn/artist/content?name={artist_name}"
-KUWO_SONG_LIST_URL = "https://www.kuwo.cn/newh5/artist/artistMusicByPage"
-KUWO_SONG_INFO_URL = "https://wapi.kuwo.cn/api/www/music/musicInfo"
+KUWO_ARTIST_INFO_URL = "https://www.kuwo.cn/singer_detail/{artist_id}/info"
+KUWO_SONG_LIST_URL = "https://wapi.kuwo.cn/api/www/artist/artistMusic"
 KUWO_LYRIC_URL = "https://wapi.kuwo.cn/openapi/v1/www/lyric/getlyric"
 KUWO_COMMENT_URL = (
     "https://comment.kuwo.cn/com.s?"
@@ -29,7 +27,7 @@ COMMENTS_PER_SONG = 3
 TARGET_SONG_COUNT = 2000
 TARGET_ARTIST_COUNT = 100
 
-MIN_REQUEST_INTERVAL_SECONDS = 2.1
-MAX_REQUEST_INTERVAL_SECONDS = 4.0
+MIN_REQUEST_INTERVAL_SECONDS = 0.1
+MAX_REQUEST_INTERVAL_SECONDS = 0.5
 REQUEST_TIMEOUT_SECONDS = 15
 

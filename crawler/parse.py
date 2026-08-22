@@ -1,21 +1,35 @@
 """解析并聚合歌手与歌曲数据"""
 
+import re
 from bs4 import BeautifulSoup
 
+def parse_artist(artist_id: str, info_html: str) -> dict:
+    """从歌手资料页中提取姓名、简介和图片。"""
+    info_soup = BeautifulSoup(info_html, "html.parser")
 
-def parse_artist(artist_id: str, detail_html: str, introduction_html: str) -> dict:
-    """从歌手主页和资料页中提取歌手信息。"""
-    detail_soup = BeautifulSoup(detail_html, "html.parser")
-    introduction_soup = BeautifulSoup(introduction_html, "html.parser")
+    name_tag = info_soup.select_one(".name_out .name")
+    introduction_tag = info_soup.select_one(".child_view > p.info")
+    basic_info_tag = info_soup.select_one(".child_view > .list_info")
+    image_match = re.search(r'pic300:"([^"]+)"', info_html) # 特殊方式解析图片
 
-    name_tag = detail_soup.select_one(".ad_name") # 在歌手主页中查找属性为类且名为 ad_name 的第一个元素，确定歌手姓名
-    image_tag = detail_soup.select_one(".bannerInfo img")
-    introduction_tag = introduction_soup.select_one("#introduce p") # 在歌手介绍页面中，查找 ID 为 introduce 的元素里的第一个 <p> 标签。
-
-    name = name_tag.get_text(strip=True) if name_tag else ""
-    image_url = image_tag.get("src", "") if image_tag else "" # 获取src属性的值，如果没有该属性则返回空字符串
+    name = (
+        " ".join(name_tag.get_text(" ", strip=True).split())
+        if name_tag
+        else ""
+    ) # 处理非换行空格
     introduction = (
-        introduction_tag.get_text(" ", strip=True) if introduction_tag else ""
+        " ".join(introduction_tag.get_text(" ", strip=True).split())
+        if introduction_tag
+        else ""
+    )
+    if not introduction and basic_info_tag:
+        introduction = " ".join(
+            basic_info_tag.get_text(" ", strip=True).split()
+        ) # 个人简介为空时使用基本信息。
+    image_url = (
+        image_match.group(1).replace(r"\u002F", "/")
+        if image_match
+        else ""
     )
 
     return {
@@ -24,22 +38,20 @@ def parse_artist(artist_id: str, detail_html: str, introduction_html: str) -> di
         "introduction": introduction,
         "image_url": image_url,
         "source_url": (
-            "https://kuwo.cn/newh5/artist/artistDetail?id=" + artist_id
+            "https://www.kuwo.cn/singer_detail/" + artist_id + "/info"
         ),
     }
 
-
-
 def parse_song(
-    song_id: str,
-    song_info: dict,
+    song_item: dict,
     lyric_data: dict,
     comment_data: dict,
     artist_id: str,
     artist_image_url: str, # 歌曲没有图片时默认采用艺术家的
 ) -> dict:
     """提取歌曲信息，并将逐行歌词合并成普通文本。"""
-    item = song_info.get("data") or {}
+    song_id = str(song_item["rid"])
+    item = song_item
     lyric_items = (lyric_data.get("data") or {}).get("lrclist") or []
 
     lyric_lines = []

@@ -1,18 +1,17 @@
 # 酷我音乐具体爬取过程
 
+from urllib.parse import urlencode
+
 from pypinyin import lazy_pinyin
-from urllib.parse import quote, urlencode
 
 from .config import (
     ARTISTS_PER_PAGE,
     COMMENTS_PER_SONG,
-    KUWO_ARTIST_DETAIL_URL,
-    KUWO_ARTIST_INTRO_URL,
+    KUWO_ARTIST_INFO_URL,
     KUWO_ARTIST_LIST_URL,
     KUWO_COMMENT_URL,
     KUWO_LYRIC_URL,
     KUWO_RAW_DATA_DIR,
-    KUWO_SONG_INFO_URL,
     KUWO_SONG_LIST_URL,
     LETTERS,
     SONGS_PER_ARTIST,
@@ -50,63 +49,45 @@ def get_artist_queue(artist_page: int) -> list[tuple[str, str]]:
 
 
 def crawl_song(
-    song_id: str,
+    song_item: dict,
     artist_id: str,
     artist_image_url: str,
 ) -> dict:
-    """取得一首歌曲的资料、歌词和热门评论。"""
-    info_url = KUWO_SONG_INFO_URL + "?" + urlencode({"mid": song_id})
-    info_cache = KUWO_RAW_DATA_DIR / "songs" / f"{song_id}_info.json"
-    song_info = fetch(info_url, info_cache)
+    """取得一首歌曲的歌词和热门评论。"""
+    song_id = str(song_item["rid"])
 
     lyric_url = KUWO_LYRIC_URL + "?" + urlencode({"musicId": song_id})
     lyric_cache = KUWO_RAW_DATA_DIR / "songs" / f"{song_id}_lyrics.json"
     lyric_data = fetch(lyric_url, lyric_cache)
 
     comment_url = KUWO_COMMENT_URL.format(
-    rows=COMMENTS_PER_SONG,
-    song_id=song_id,
-)
+        rows=COMMENTS_PER_SONG,
+        song_id=song_id,
+    )
     comment_cache = KUWO_RAW_DATA_DIR / "comments" / f"{song_id}.json"
     comment_data = fetch(comment_url, comment_cache)
 
     return parse_song(
-        song_id,
-        song_info,
+        song_item,
         lyric_data,
         comment_data,
         artist_id,
         artist_image_url,
     )
 
-
 def crawl_artist_info(artist_id: str, prefix: str) -> dict:
-    """取得一位歌手的基本资料。"""
-    detail_url = KUWO_ARTIST_DETAIL_URL.format(artist_id=artist_id)
-    detail_cache = KUWO_RAW_DATA_DIR / "artists" / f"{artist_id}_detail.html"
-    detail_html = fetch(detail_url, detail_cache)
-
-    # 先获得歌手名字
-    basic_artist = parse_artist(artist_id, detail_html, "")
-    artist_name = basic_artist["name"]
-    # 利用歌手名字获得个人主页url
-    introduction_url = KUWO_ARTIST_INTRO_URL.format(
-        artist_name=quote(artist_name, safe="")
-    )
-    introduction_cache = (
-        KUWO_RAW_DATA_DIR / "artists" / f"{artist_id}_introduction.html"
-    )
-    introduction_html = fetch(introduction_url, introduction_cache)
-
-    artist = parse_artist(artist_id, detail_html, introduction_html)
+    """使用歌手 ID 取得基本资料。"""
+    info_url = KUWO_ARTIST_INFO_URL.format(artist_id=artist_id)
+    info_cache = KUWO_RAW_DATA_DIR / "artists" / f"{artist_id}_info.html"
+    info_html = fetch(info_url, info_cache)
     
+    artist = parse_artist(artist_id, info_html)
+
     if not prefix and artist["name"]:
-        prefix = lazy_pinyin(artist["name"])[0][0].upper() # 指定url爬取模式下更新prefix
+        prefix = lazy_pinyin(artist["name"])[0][0].upper() # 便于指定url爬取模式下更新首字母
     artist["prefix"] = prefix
 
     return artist
-
-
 
 def crawl_artist_songs(
     artist_id: str,
@@ -121,27 +102,28 @@ def crawl_artist_songs(
     while len(artist_songs) < SONGS_PER_ARTIST:
         parameters = urlencode(
             {
-                "id": artist_id,
+                "artistid": artist_id,
                 "pn": song_page,
                 "rn": SONGS_PER_PAGE,
+                "httpsStatus": 1,
             }
         )
         song_list_url = KUWO_SONG_LIST_URL + "?" + parameters
         song_list_cache = (
             KUWO_RAW_DATA_DIR
             / "song_lists"
-            / f"{artist_id}_{song_page}.json"
+            / f"{artist_id}_{song_page}_artist_music.json"
         )
         song_list_data = fetch(song_list_url, song_list_cache)
 
-        song_items = song_list_data["data"]["musicList"] or []
+        song_items = song_list_data["data"]["list"] or []
         if not song_items:
             break
         for item in song_items:
-            song_id = str(item["id"])
+            song_id = str(item["rid"])
             if song_id in saved_song_ids or song_id in temporary_song_ids:
                 continue
-            song = crawl_song(song_id, artist_id, artist_image_url)
+            song = crawl_song(item, artist_id, artist_image_url)
             if song["title"] and song["lyrics"] and song["image_url"]:
                 artist_songs.append(song)
                 temporary_song_ids.add(song_id)
