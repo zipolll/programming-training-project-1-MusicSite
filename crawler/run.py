@@ -48,11 +48,11 @@ def show_artist(data: dict, artist_id: str) -> None:
         if str(song["artist_id"]) == artist_id
     ]
     print(f"\n歌手: {selected_artist['name']}")
-    print(f"简介: {selected_artist['introduction'][:150]}...")
+    print(f"简介: {selected_artist['introduction'][:150]}...") # 超过150字省略
     print(f"图片: {selected_artist['image_url']}")
     print(f"主页: {selected_artist['source_url']}")
     print("歌曲:")
-    for song in selected_songs[:SONGS_PER_ARTIST]:
+    for song in selected_songs[:SONGS_PER_ARTIST]: # 至多展示10首
         print(f"- {song['title']} ({song['album']})")
         for comment in song["source_comments"]:
             print(f"{comment['created_at']}")

@@ -7,7 +7,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent # 获取项目根目录
 KUWO_RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw" / "kuwo" # 获取酷我音乐原始数据存储目录
 KUWO_OUTPUT_PATH = PROJECT_ROOT / "data" / "processed" / "kuwo.json" # 获取酷我音乐处理后数据存储路径
 
-
 KUWO_ARTIST_LIST_URL = "https://wapi.kuwo.cn/api/www/artist/artistInfo"
 KUWO_ARTIST_INFO_URL = "https://www.kuwo.cn/singer_detail/{artist_id}/info"
 KUWO_SONG_LIST_URL = "https://wapi.kuwo.cn/api/www/artist/artistMusic"

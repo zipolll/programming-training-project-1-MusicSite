@@ -4,10 +4,8 @@ import json
 import random
 import time
 from pathlib import Path
-
 import requests
 from fake_useragent import UserAgent
-
 from .config import (
     MAX_REQUEST_INTERVAL_SECONDS,
     MIN_REQUEST_INTERVAL_SECONDS,
@@ -30,11 +28,12 @@ def fetch(url: str, cache_path: Path) -> dict | str:
     )
     time.sleep(wait_seconds)
 
-    headers = {"User-Agent": UserAgent(platforms="desktop").random} # 使用随机 User-Agent 模拟浏览器请求
+    headers = {"User-Agent": UserAgent(platforms="desktop").random} # 使用随机 User-Agent 模拟桌面端浏览器请求
     response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT_SECONDS)
     response.raise_for_status() # 如果响应状态码不是 200，则抛出异常
 
     cache_path.parent.mkdir(parents=True, exist_ok=True)
+    # 是JSON文件
     if cache_path.suffix == ".json":
         data = response.json() # 将 JSON 响应内容解析为 Python 对象
         with cache_path.open("w", encoding="utf-8") as file: # 以写入模式打开文件，如果文件不存在则创建新文件

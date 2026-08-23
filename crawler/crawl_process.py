@@ -1,9 +1,7 @@
-# 酷我音乐具体爬取过程
+"""酷我音乐具体爬取过程"""
 
 from urllib.parse import urlencode
-
 from pypinyin import lazy_pinyin
-
 from .config import (
     ARTISTS_PER_PAGE,
     COMMENTS_PER_SONG,
@@ -23,7 +21,6 @@ from .parse import parse_artist, parse_song
 def get_artist_queue(artist_page: int) -> list[tuple[str, str]]:
     """取得当前页 A-Z 的歌手 ID。"""
     artist_queue = []
-
     for letter in LETTERS:
         parameters = urlencode(
             {
@@ -40,11 +37,9 @@ def get_artist_queue(artist_page: int) -> list[tuple[str, str]]:
             / f"{letter}_{artist_page}.json"
         ) # 构造用于存放artist列表的缓存文件路径，同一首字母且同一页的歌手列表会存放在同一个缓存文件中
         list_data = fetch(list_url, list_cache)
-
         artist_items = list_data["data"]["artistList"] or []
         for item in artist_items:
             artist_queue.append((letter, str(item["id"])))
-
     return artist_queue
 
 
@@ -80,13 +75,12 @@ def crawl_artist_info(artist_id: str, prefix: str) -> dict:
     info_url = KUWO_ARTIST_INFO_URL.format(artist_id=artist_id)
     info_cache = KUWO_RAW_DATA_DIR / "artists" / f"{artist_id}_info.html"
     info_html = fetch(info_url, info_cache)
-    
+
     artist = parse_artist(artist_id, info_html)
 
     if not prefix and artist["name"]:
         prefix = lazy_pinyin(artist["name"])[0][0].upper() # 便于指定url爬取模式下更新首字母
     artist["prefix"] = prefix
-
     return artist
 
 def crawl_artist_songs(
@@ -96,10 +90,10 @@ def crawl_artist_songs(
 ) -> list[dict]:
     """取得一位歌手最多十首有效歌曲。"""
     artist_songs = []
-    temporary_song_ids = set() # 防止在同一轮中爬取到重复歌曲
     song_page = 1
 
     while len(artist_songs) < SONGS_PER_ARTIST:
+        # 获取歌手的歌曲清单
         parameters = urlencode(
             {
                 "artistid": artist_id,
@@ -116,22 +110,21 @@ def crawl_artist_songs(
         )
         song_list_data = fetch(song_list_url, song_list_cache)
 
+        # 爬取每首歌曲
         song_items = song_list_data["data"]["list"] or []
         if not song_items:
             break
         for item in song_items:
             song_id = str(item["rid"])
-            if song_id in saved_song_ids or song_id in temporary_song_ids:
+            if song_id in saved_song_ids:
                 continue
             song = crawl_song(item, artist_id, artist_image_url)
             if song["title"] and song["lyrics"] and song["image_url"]:
                 artist_songs.append(song)
-                temporary_song_ids.add(song_id)
             if len(artist_songs) == SONGS_PER_ARTIST:
                 break
-
+    
         if len(song_items) < SONGS_PER_PAGE:
             break # 歌曲数量已不足
         song_page += 1
-
     return artist_songs
