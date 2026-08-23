@@ -55,7 +55,10 @@ def show_artist(data: dict, artist_id: str) -> None:
     for song in selected_songs[:SONGS_PER_ARTIST]: # 至多展示10首
         print(f"- {song['title']} ({song['album']})")
         for comment in song["source_comments"]:
-            print(f"{comment['created_at']}")
+            content = comment["content"]
+            if len(content) > 15:
+                content = content[:15] + "..."
+            print(f"{comment['created_at']}-{content}")
 
 
 def main() -> None:

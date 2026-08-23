@@ -72,7 +72,7 @@ class ArtistListView(ListView):
     model = Artist
     template_name = "catalog/artist_list.html"
     context_object_name = "artists"
-    paginate_by = 20
+    paginate_by = 20 # 单页显示 20 位歌手
 
     def get_queryset(self):
         artists = Artist.objects.all()
