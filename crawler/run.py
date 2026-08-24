@@ -113,6 +113,12 @@ def main() -> None:
                     saved_song_ids.update(
                         song["external_id"] for song in artist_songs # 把本次新保存的所有歌曲 ID 加入已保存歌曲集合。
                     )
+                    completed_artist_ids.add(current_artist_id)
+                    data["completed_artist_ids"] = sorted(
+                        completed_artist_ids,
+                        key=int,
+                    )
+                    save_json(data, KUWO_OUTPUT_PATH)
                     print(
                         f"已保存 {artist['name']}: {len(artist_songs)} 首，"
                         f"当前共 {len(data['artists'])} 位歌手、"
@@ -120,13 +126,6 @@ def main() -> None:
                     )
                 else:
                     print(f"跳过信息不完整的歌手 ID: {current_artist_id}")
-
-                completed_artist_ids.add(current_artist_id)
-                data["completed_artist_ids"] = sorted(
-                    completed_artist_ids,
-                    key=int,
-                )
-                save_json(data, KUWO_OUTPUT_PATH)
 
                 if single_artist_id:
                     stop_crawling = True

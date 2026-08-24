@@ -1,6 +1,8 @@
 :root {
   color-scheme: light;
   font-family: system-ui, sans-serif;
+  color: #25233a;
+  background: #f7f6fb;
 }
 
 body {
@@ -15,9 +17,136 @@ header {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #ddd;
+  background: #fff;
 }
 
-nav a {
+header nav a {
   margin-left: 1rem;
 }
 
+a {
+  color: #5145a6;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #2f2775;
+  text-decoration: underline;
+}
+
+.catalog-panel {
+  margin-top: 2rem;
+  background: #fff;
+  border: 1px solid #e4e1ed;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.section-heading {
+  padding: 1.25rem 1.5rem 0.75rem;
+}
+
+.section-heading h2,
+.section-heading p {
+  margin: 0;
+}
+
+.section-heading p {
+  color: #777286;
+}
+
+.alphabet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0 1.5rem 1rem;
+}
+
+.alphabet a {
+  min-width: 1.5rem;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid #dcd7e8;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.alphabet a.active {
+  color: #fff;
+  background: #6556c7;
+  border-color: #6556c7;
+}
+
+.catalog-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.catalog-row {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid #eeeaf3;
+}
+
+.catalog-row:hover {
+  background: #faf9fe;
+}
+
+.catalog-title {
+  color: #29263a;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.empty-message {
+  padding: 2rem 1.5rem;
+  color: #777286;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.25rem 0;
+}
+
+.pagination a,
+.pagination strong {
+  margin: 0;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #dcd7e8;
+  border-radius: 5px;
+}
+
+.pagination strong {
+  color: #fff;
+  background: #6556c7;
+}
+
+.pagination form {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pagination input {
+  width: 4rem;
+  padding: 0.3rem;
+}
+
+@media (max-width: 600px) {
+  header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  header nav a {
+    margin: 0 1rem 0 0;
+  }
+
+  .catalog-row {
+    padding: 0.7rem 1rem;
+  }
+}

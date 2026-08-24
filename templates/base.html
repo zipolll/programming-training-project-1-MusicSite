@@ -5,12 +5,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}音乐信息系统{% endblock %}</title>
+  <title>{% block title %}ZFX's Music Site{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
   <header>
-    <h1><a href="{% url 'catalog:song_list' %}">音乐信息系统</a></h1>
+    <h1><a href="{% url 'catalog:song_list' %}">ZFX's Music Site</a></h1>
     <nav>
       <a href="{% url 'catalog:song_list' %}">歌曲</a>
       <a href="{% url 'catalog:artist_list' %}">歌手</a>
