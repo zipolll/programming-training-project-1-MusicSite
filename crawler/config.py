@@ -9,6 +9,7 @@ KUWO_OUTPUT_PATH = PROJECT_ROOT / "data" / "processed" / "kuwo.json" # 获取酷
 
 KUWO_ARTIST_LIST_URL = "https://wapi.kuwo.cn/api/www/artist/artistInfo"
 KUWO_ARTIST_INFO_URL = "https://www.kuwo.cn/singer_detail/{artist_id}/info"
+KUWO_ARTIST_PAGE_URL = "https://www.kuwo.cn/singer_detail/{artist_id}"
 KUWO_SONG_LIST_URL = "https://wapi.kuwo.cn/api/www/artist/artistMusic"
 KUWO_LYRIC_URL = "https://wapi.kuwo.cn/openapi/v1/www/lyric/getlyric"
 KUWO_COMMENT_URL = (

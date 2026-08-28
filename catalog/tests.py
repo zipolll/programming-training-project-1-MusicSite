@@ -187,6 +187,7 @@ class CatalogViewTest(TestCase):
         self.assertEqual(response.context["result_count"], 21)
         self.assertEqual(response.context["page_obj"].paginator.num_pages, 2)
         self.assertIsNotNone(response.context["elapsed_time"])
+        self.assertTemplateUsed(response, "catalog/search.html")
         self.assertContains(response, song.image_url)
         self.assertContains(
             response,

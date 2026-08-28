@@ -1,10 +1,10 @@
-{% if is_paginated %}
+{% if page_obj.has_other_pages %}
   <nav class="pagination">
-    <a href="?{% if initial %}initial={{ initial }}&amp;{% endif %}page=1">首页</a>
+    <a href="{% querystring page=1 %}">首页</a>
 
     {% if page_obj.has_previous %}
-      <a href="?{% if initial %}initial={{ initial }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">
-        上一页
+      <a href="{% querystring page=page_obj.previous_page_number %}">
+        <
       </a>
     {% endif %}
 
@@ -13,7 +13,7 @@
         {% if page_number == page_obj.number %}
           <strong>{{ page_number }}</strong>
         {% else %}
-          <a href="?{% if initial %}initial={{ initial }}&amp;{% endif %}page={{ page_number }}">
+          <a href="{% querystring page=page_number %}">
             {{ page_number }}
           </a>
         {% endif %}
@@ -21,20 +21,22 @@
     {% endfor %}
 
     {% if page_obj.has_next %}
-      <a href="?{% if initial %}initial={{ initial }}&amp;{% endif %}page={{ page_obj.next_page_number }}">
-        下一页
+      <a href="{% querystring page=page_obj.next_page_number %}">
+        >
       </a>
     {% endif %}
 
-    <a href="?{% if initial %}initial={{ initial }}&amp;{% endif %}page={{ page_obj.paginator.num_pages }}">
+    <a href="{% querystring page=page_obj.paginator.num_pages %}">
       末页
     </a>
     <span class="page-status">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span>
 
     <form method="get" class="page-jump">
-      {% if initial %}
-        <input type="hidden" name="initial" value="{{ initial }}">
-      {% endif %}
+      {% for key, value in request.GET.items %}
+        {% if key != "page" %}
+          <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+      {% endfor %}
       <label for="page-number">跳转到</label>
       <input
         id="page-number"

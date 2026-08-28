@@ -4,7 +4,7 @@ from django.contrib import admin
 
 from .models import Artist, Comment, Song
 
-
+# 管理员系统中可查询歌手、歌曲
 @admin.register(Artist)
 class ArtistAdmin(admin.ModelAdmin):
     list_display = ("name", "prefix")

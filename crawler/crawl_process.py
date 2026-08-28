@@ -46,7 +46,6 @@ def get_artist_queue(artist_page: int) -> list[tuple[str, str]]:
 def crawl_song(
     song_item: dict,
     artist_id: str,
-    artist_image_url: str,
 ) -> dict:
     """取得一首歌曲的歌词和热门评论。"""
     song_id = str(song_item["rid"])
@@ -67,7 +66,6 @@ def crawl_song(
         lyric_data,
         comment_data,
         artist_id,
-        artist_image_url,
     )
 
 def crawl_artist_info(artist_id: str, prefix: str) -> dict:
@@ -85,7 +83,6 @@ def crawl_artist_info(artist_id: str, prefix: str) -> dict:
 
 def crawl_artist_songs(
     artist_id: str,
-    artist_image_url: str,
     saved_song_ids: set[str],
 ) -> list[dict]:
     """取得一位歌手最多十首有效歌曲。"""
@@ -118,8 +115,8 @@ def crawl_artist_songs(
             song_id = str(item["rid"])
             if song_id in saved_song_ids:
                 continue
-            song = crawl_song(item, artist_id, artist_image_url)
-            if song["title"] and song["lyrics"] and song["image_url"]:
+            song = crawl_song(item, artist_id)
+            if song["title"] and song["lyrics"]:
                 artist_songs.append(song)
             if len(artist_songs) == SONGS_PER_ARTIST:
                 break

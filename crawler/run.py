@@ -98,14 +98,12 @@ def main() -> None:
                 artist = crawl_artist_info(current_artist_id, prefix)
                 artist_songs = crawl_artist_songs(
                     current_artist_id,
-                    artist["image_url"],
                     saved_song_ids,
                 )
 
                 if (
                     artist["name"]
                     and artist["introduction"]
-                    and artist["image_url"]
                     and artist_songs
                 ):
                     data["artists"].append(artist)

@@ -133,13 +133,13 @@ def search(request: HttpRequest) -> HttpResponse:
 
         paginator = Paginator(results, 20)  # 每页显示 20 条
         page_obj = paginator.get_page(request.GET.get("page"))
-        result_count = paginator.count  # 利用 list() 强制执行查询，避免惰性查询影响计时。
-        page_obj.object_list = list(page_obj.object_list)
+        result_count = paginator.count
+        page_obj.object_list = list(page_obj.object_list)  # 利用 list() 强制执行查询，避免惰性查询影响计时。
         elapsed_time = perf_counter() - start_time
 
     return render(
         request,
-        "catalog/search_results.html",
+        "catalog/search.html",
         {
             "form": form,
             "page_obj": page_obj,

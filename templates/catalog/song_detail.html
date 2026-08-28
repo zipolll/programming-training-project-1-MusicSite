@@ -15,6 +15,7 @@
             {{ song.artist.name }}
           </a>
         </p>
+        <!-- 新标签页打开，并阻止新页面访问原页面 -->
         <a class="source-link" href="{{ song.source_url }}" target="_blank" rel="noopener">
           查看原始网站
         </a>
@@ -23,6 +24,7 @@
 
     <section class="detail-section">
       <h3>歌词</h3>
+      <!-- pre保留原文本中的换行和空格 -->
       <pre class="lyrics">{{ song.lyrics }}</pre>
     </section>
   </article>
@@ -31,6 +33,7 @@
     <h2>评论</h2>
 
     <form method="post" class="comment-form">
+      <!-- Django 的 CSRF 安全保护，防止跨网站请求 -->
       {% csrf_token %}
       {{ comment_form.body.label_tag }}
       {{ comment_form.body }}

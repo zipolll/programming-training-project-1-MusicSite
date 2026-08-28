@@ -2,6 +2,8 @@
 
 import re
 from bs4 import BeautifulSoup
+from .config import KUWO_ARTIST_PAGE_URL
+
 
 def parse_artist(artist_id: str, info_html: str) -> dict:
     """从歌手资料页中提取姓名、简介和图片。"""
@@ -18,28 +20,28 @@ def parse_artist(artist_id: str, info_html: str) -> dict:
         else ""
     ) # 处理非换行空格
     introduction = (
-        " ".join(introduction_tag.get_text(" ", strip=True).split())
+        introduction_tag.get_text("\n", strip=True)
         if introduction_tag
         else ""
     )
     if not introduction and basic_info_tag:
-        introduction = " ".join(
-            basic_info_tag.get_text(" ", strip=True).split()
+        introduction = basic_info_tag.get_text(
+            "\n", strip=True
         ) # 个人简介为空时使用基本信息。
     image_url = (
         image_match.group(1).replace(r"\u002F", "/") # 把正则表达式捕获的转义斜杠修复为普通斜杠
         if image_match
         else ""
     )
+    if not image_url.rsplit("/", 1)[-1]:
+        image_url = ""
 
     return {
         "external_id": artist_id,
         "name": name,
         "introduction": introduction,
         "image_url": image_url,
-        "source_url": (
-            "https://www.kuwo.cn/singer_detail/" + artist_id + "/info"
-        ),
+        "source_url": KUWO_ARTIST_PAGE_URL.format(artist_id=artist_id),
     }
 
 def parse_song(
@@ -47,7 +49,6 @@ def parse_song(
     lyric_data: dict,
     comment_data: dict,
     artist_id: str,
-    artist_image_url: str, # 歌曲没有图片时默认采用艺术家的
 ) -> dict:
     """提取歌曲信息，并将逐行歌词合并成普通文本。"""
     song_id = str(song_item["rid"])
@@ -68,13 +69,17 @@ def parse_song(
             }
         )
 
+    image_url = song_item.get("pic") or ""
+    if not image_url.rsplit("/", 1)[-1]:
+        image_url = ""
+
     return {
         "external_id": song_id,
         "title": song_item.get("name") or "",
         "artist_id": artist_id,
         "album": song_item.get("album") or "",
         "lyrics": "\n".join(lyric_lines),
-        "image_url": song_item.get("pic") or artist_image_url,
+        "image_url": image_url,
         "source_comments": source_comments,
         "source_url": "https://www.kuwo.cn/play_detail/" + song_id,
     }

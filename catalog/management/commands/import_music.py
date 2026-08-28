@@ -26,14 +26,20 @@ class Command(BaseCommand):
 
         # 更新或创建歌手
         for artist_data in data["artists"]:
+            artist_id = str(artist_data["external_id"])
+            source_url = f"https://www.kuwo.cn/singer_detail/{artist_id}"
+            # 兼容以前保存的 /info 主页，避免重复创建同一位歌手。
+            Artist.objects.filter(source_url=source_url + "/info").update(
+                source_url=source_url
+            )
             # 根据 source_url 查找歌手；找不到就创建；找到了就使用 defaults 中的数据更新。
             artist, created = Artist.objects.update_or_create(
-                source_url=artist_data["source_url"],
+                source_url=source_url,
                 defaults={
                     "name": artist_data["name"],
                     "prefix": artist_data["prefix"],
                     "introduction": artist_data["introduction"],
-                    "image_url": artist_data["image_url"],
+                    "image_url": artist_data.get("image_url", ""),
                 },
             )
             artist_map[str(artist_data["external_id"])] = artist
@@ -42,14 +48,15 @@ class Command(BaseCommand):
 
         # 更新或创建歌曲
         for song_data in data["songs"]:
-            artist = artist_map[str(song_data["artist_id"])]
+            artist_id = str(song_data["artist_id"])
+            artist = artist_map[artist_id]
             song, created = Song.objects.update_or_create(
                 source_url=song_data["source_url"],
                 defaults={
                     "title": song_data["title"],
                     "artist": artist,
                     "lyrics": song_data["lyrics"],
-                    "image_url": song_data["image_url"],
+                    "image_url": song_data.get("image_url", ""),
                 },
             )
             if created:
