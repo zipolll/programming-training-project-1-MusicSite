@@ -1,10 +1,20 @@
 """把歌手、歌曲和评论注册到 Django 自带的后台，方便调试"""
 
 from django.contrib import admin
+
 from .models import Artist, Comment, Song
 
 
-admin.site.register(Artist)
-admin.site.register(Song)
-admin.site.register(Comment)
+@admin.register(Artist)
+class ArtistAdmin(admin.ModelAdmin):
+    list_display = ("name", "prefix")
+    search_fields = ("name", "introduction")
 
+
+@admin.register(Song)
+class SongAdmin(admin.ModelAdmin):
+    list_display = ("title", "artist")
+    search_fields = ("title", "artist__name", "lyrics")
+
+
+admin.site.register(Comment)
