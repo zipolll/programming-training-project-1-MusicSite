@@ -1,5 +1,45 @@
-<!-- 歌手详情 -->
 {% extends "base.html" %}
-{% block title %}歌手详情{% endblock %}
-{% block content %}<h2>歌手详情 #{{ artist_id }}</h2><p>TODO：歌手信息及其全部歌曲。</p>{% endblock %}
 
+{% block title %}{{ artist.name }}{% endblock %}
+
+{% block content %}
+  <article class="panel detail-panel">
+    <div class="detail-layout">
+      <img class="cover-image" src="{{ artist.display_image_url }}" alt="{{ artist.name }}">
+      <div class="detail-summary">
+        <p class="eyebrow">歌手</p>
+        <h2>{{ artist.name }}</h2>
+        <a class="source-link" href="{{ artist.source_url }}" target="_blank" rel="noopener">
+          查看原始网站
+        </a>
+      </div>
+    </div>
+
+    <section class="detail-section">
+      <h3>歌手简介</h3>
+      <p class="introduction">{{ artist.introduction|linebreaksbr }}</p>
+    </section>
+  </article>
+
+  <section class="panel related-panel">
+    <div class="section-heading">
+      <div>
+        <h2>全部歌曲</h2>
+        <p>共 {{ artist.songs.count }} 首</p>
+      </div>
+    </div>
+
+    {% if artist.songs.count %}
+      <div class="result-grid">
+        {% for song in artist.songs.all %}
+          <a class="result-card" href="{% url 'catalog:song_detail' song.id %}">
+            <img src="{{ song.display_image_url }}" alt="{{ song.title }}" loading="lazy">
+            <span>{{ song.title }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-message">该歌手还没有歌曲。</p>
+    {% endif %}
+  </section>
+{% endblock %}

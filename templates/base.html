@@ -1,4 +1,3 @@
-<!-- 页面基础结构 -->
 {% load static %}
 <!doctype html>
 <html lang="zh-CN">
@@ -9,15 +8,21 @@
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
-  <header>
-    <h1><a href="{% url 'catalog:song_list' %}">ZFX's Music Site</a></h1>
-    <nav>
+  <header class="site-header">
+    <h1 class="site-title">
+      <a href="{% url 'catalog:song_list' %}">ZFX's Music Site</a>
+    </h1>
+    <nav class="site-nav">
       <a href="{% url 'catalog:song_list' %}">歌曲</a>
       <a href="{% url 'catalog:artist_list' %}">歌手</a>
       <a href="{% url 'catalog:search' %}">搜索</a>
     </nav>
   </header>
-  <main>{% block content %}{% endblock %}</main>
+
+  <main class="page-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">ZFX's Music Site</footer>
 </body>
 </html>
-

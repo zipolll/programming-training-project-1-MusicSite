@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}歌曲列表{% endblock %}
+
+{% block content %}
+  <section class="panel catalog-panel">
+    <div class="section-heading">
+      <div>
+        <h2>歌曲列表</h2>
+        <p>系统中共有 {{ page_obj.paginator.count }} 首歌曲。</p>
+      </div>
+    </div>
+
+    {% if song_list %}
+      <div class="result-grid">
+        {% for song in song_list %}
+          <a class="result-card" href="{% url 'catalog:song_detail' song.id %}">
+            <img src="{{ song.display_image_url }}" alt="{{ song.title }}" loading="lazy">
+            <span>{{ song.title }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-message">没有找到相关歌曲。</p>
+    {% endif %}
+  </section>
+
+  {% include "catalog/pagination.html" %}
+{% endblock %}

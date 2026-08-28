@@ -2,7 +2,7 @@
 
 from time import perf_counter
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Value, When
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
@@ -14,14 +14,8 @@ from .models import Artist, Comment, Song
 class SongListView(ListView):
     """分页展示全部歌曲。"""
     model = Song
-    template_name = "catalog/item_list.html"
-    context_object_name = "items"
+    template_name = "catalog/song_list.html"
     paginate_by = 20
-    extra_context = {
-        "list_type": "song",
-        "page_title": "歌曲列表",
-        "unit": "首歌曲",
-    }
 
 
 class SongDetailView(DetailView):
@@ -70,14 +64,8 @@ def delete_comment(
 class ArtistListView(ListView):
     """按首字母筛选并分页展示歌手。"""
     model = Artist
-    template_name = "catalog/item_list.html"
-    context_object_name = "items"
+    template_name = "catalog/artist_list.html"
     paginate_by = 20
-    extra_context = {
-        "list_type": "artist",
-        "page_title": "歌手列表",
-        "unit": "位歌手",
-    }
 
     def get_queryset(self):
         artists = Artist.objects.all()
@@ -118,11 +106,30 @@ def search(request: HttpRequest) -> HttpResponse:
                 Q(title__icontains=query)
                 | Q(artist__name__icontains=query)
                 | Q(lyrics__icontains=query)
-            )
+            ).annotate(
+                search_rank=Case(
+                    When(title__iexact=query, then=Value(1)),
+                    When(artist__name__iexact=query, then=Value(2)),
+                    When(title__istartswith=query, then=Value(3)),
+                    When(title__icontains=query, then=Value(4)),
+                    When(artist__name__istartswith=query, then=Value(5)),
+                    When(artist__name__icontains=query, then=Value(6)),
+                    default=Value(7),
+                    output_field=IntegerField(), # 结果当作整数处理
+                )
+            ).order_by("search_rank", "title", "id")
         else:
             results = Artist.objects.filter(
                 Q(name__icontains=query) | Q(introduction__icontains=query)
-            )
+            ).annotate(
+                search_rank=Case(
+                    When(name__iexact=query, then=Value(1)),
+                    When(name__istartswith=query, then=Value(2)),
+                    When(name__icontains=query, then=Value(3)),
+                    default=Value(4),
+                    output_field=IntegerField(),
+                )
+            ).order_by("search_rank", "name", "id")
 
         paginator = Paginator(results, 20)  # 每页显示 20 条
         page_obj = paginator.get_page(request.GET.get("page"))

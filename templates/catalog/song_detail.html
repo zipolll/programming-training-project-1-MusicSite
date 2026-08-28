@@ -1,5 +1,63 @@
-<!-- 歌曲详情 -->
 {% extends "base.html" %}
-{% block title %}歌曲详情{% endblock %}
-{% block content %}<h2>歌曲详情 #{{ song_id }}</h2><p>TODO：歌曲信息、歌词及评论。</p>{% endblock %}
 
+{% block title %}{{ song.title }}{% endblock %}
+
+{% block content %}
+  <article class="panel detail-panel">
+    <div class="detail-layout">
+      <img class="cover-image" src="{{ song.display_image_url }}" alt="{{ song.title }}">
+      <div class="detail-summary">
+        <p class="eyebrow">歌曲</p>
+        <h2>{{ song.title }}</h2>
+        <p>
+          歌手：
+          <a href="{% url 'catalog:artist_detail' song.artist.id %}">
+            {{ song.artist.name }}
+          </a>
+        </p>
+        <a class="source-link" href="{{ song.source_url }}" target="_blank" rel="noopener">
+          查看原始网站
+        </a>
+      </div>
+    </div>
+
+    <section class="detail-section">
+      <h3>歌词</h3>
+      <pre class="lyrics">{{ song.lyrics }}</pre>
+    </section>
+  </article>
+
+  <section class="panel comments-panel">
+    <h2>评论</h2>
+
+    <form method="post" class="comment-form">
+      {% csrf_token %}
+      {{ comment_form.body.label_tag }}
+      {{ comment_form.body }}
+      {{ comment_form.body.errors }}
+      <button type="submit">提交评论</button>
+    </form>
+
+    <div class="comment-list">
+      {% for comment in song.comments.all %}
+        <article class="comment">
+          <div class="comment-meta">
+            <time datetime="{{ comment.created_at|date:'c' }}">
+              {{ comment.created_at|date:"Y-m-d H:i:s" }}
+            </time>
+            <form
+              method="post"
+              action="{% url 'catalog:delete_comment' song.id comment.id %}"
+            >
+              {% csrf_token %}
+              <button type="submit" class="danger-button">删除</button>
+            </form>
+          </div>
+          <p>{{ comment.body|linebreaksbr }}</p>
+        </article>
+      {% empty %}
+        <p class="empty-message">暂无评论，来写第一条评论吧。</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

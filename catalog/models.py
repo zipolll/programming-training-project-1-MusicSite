@@ -1,6 +1,7 @@
 """定义歌手、歌曲、评论3类模型"""
 from django.utils import timezone
 from django.db import models
+from django.templatetags.static import static
 
 
 class Artist(models.Model):
@@ -8,10 +9,14 @@ class Artist(models.Model):
     prefix = models.CharField(max_length=1)
     introduction = models.TextField(blank=True)
     source_url = models.URLField(max_length=1000, unique=True) # 不允许出现相同的个人主页链接
-    image_url = models.URLField(max_length=1000)
+    image_url = models.URLField(max_length=1000, blank=True)
 
     class Meta:
         ordering = ["prefix", "name", "id"] # 指定排序依据
+
+    @property
+    def display_image_url(self) -> str:
+        return self.image_url or static("images/default-artist.png")
 
     def __str__(self) -> str:
         return self.name
@@ -26,10 +31,14 @@ class Song(models.Model):
     )
     lyrics = models.TextField()
     source_url = models.URLField(max_length=1000, unique=True)
-    image_url = models.URLField(max_length=1000)
+    image_url = models.URLField(max_length=1000, blank=True)
 
     class Meta:
         ordering = ["title", "id"]
+
+    @property
+    def display_image_url(self) -> str:
+        return self.image_url or static("images/default-song.png")
 
     def __str__(self) -> str:
         return f"{self.title} - {self.artist.name}"

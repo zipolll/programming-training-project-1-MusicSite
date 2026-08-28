@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}歌手列表{% endblock %}
+
+{% block content %}
+  <section class="panel catalog-panel">
+    <div class="section-heading">
+      <div>
+        <h2>歌手列表</h2>
+        <p>系统中共有 {{ page_obj.paginator.count }} 位歌手。</p>
+      </div>
+    </div>
+
+    <nav class="alphabet">
+      <a href="{% url 'catalog:artist_list' %}"{% if not initial %} class="active"{% endif %}>
+        全部
+      </a>
+      {% for letter in alphabet %}
+        <a href="?initial={{ letter }}"{% if initial == letter %} class="active"{% endif %}>
+          {{ letter }}
+        </a>
+      {% endfor %}
+    </nav>
+
+    {% if artist_list %}
+      <div class="result-grid">
+        {% for artist in artist_list %}
+          <a class="result-card" href="{% url 'catalog:artist_detail' artist.id %}">
+            <img src="{{ artist.display_image_url }}" alt="{{ artist.name }}" loading="lazy">
+            <span>{{ artist.name }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-message">没有找到相关歌手。</p>
+    {% endif %}
+  </section>
+
+  {% include "catalog/pagination.html" %}
+{% endblock %}
