@@ -9,7 +9,8 @@ class CommentForm(forms.ModelForm): # 表单内容需要保存到数据库，使
     class Meta:
         model = Comment
         fields = ["body"] # 规定表单只显示和接收 body 字段
-        labels = {"body": "评论"} # 把 body 字段在网页中显示的标签改成“评论”。
+        labels = {"body": "撰写评论"} # 把 body 字段在网页中显示的标签改成“评论”。
+        widgets = {"body": forms.Textarea(attrs={"rows": 5})} # 评论框默认显示 5 行
 
 # 输入关键词并选择搜索歌曲或歌手
 class SearchForm(forms.Form):
@@ -20,4 +21,3 @@ class SearchForm(forms.Form):
         choices=SEARCH_TYPES,
         widget=forms.RadioSelect, # 展示搜索类型时使用单选按钮
     )
-

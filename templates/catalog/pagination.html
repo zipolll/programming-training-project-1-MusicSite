@@ -1,5 +1,6 @@
 {% if page_obj.has_other_pages %}
   <nav class="pagination">
+    <!-- querystring的行为是如果没有某个参数，就让它保持原值，如果有，就覆盖 -->
     <a href="{% querystring page=1 %}">首页</a>
 
     {% if page_obj.has_previous %}

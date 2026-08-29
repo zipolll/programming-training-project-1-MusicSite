@@ -1,32 +1,38 @@
+/* ==================== 1. 全局基础样式 ==================== */
+
+/* 1.1 所有元素统一使用包含边框的尺寸计算方式 */
 * {
   box-sizing: border-box;
 }
 
+/* 1.2 页面字体、文字颜色和背景色 */
 :root {
   color-scheme: light;
   font-family: system-ui, "Microsoft YaHei", sans-serif;
-  color: #25233a;
-  background: #f7f6fb;
+  color: #243836;
+  background: #f2faf8;
 }
 
 body {
   margin: 0 auto;
-  max-width: 1040px;
+  max-width: 1200px;
   min-height: 100vh;
   padding: 0 1.25rem;
   line-height: 1.65;
 }
 
+/* 1.3 普通链接及悬停状态 */
 a {
-  color: #5145a6;
+  color: #0f766e;
   text-decoration: none;
 }
 
 a:hover {
-  color: #2f2775;
+  color: #115e59;
   text-decoration: underline;
 }
 
+/* 1.4 表单控件与通用按钮 */
 button,
 input,
 textarea {
@@ -39,32 +45,36 @@ button,
   border: 0;
   border-radius: 6px;
   color: #fff;
-  background: #6556c7;
+  background: #0f8a7d;
+  font-weight: 600;
   cursor: pointer;
 }
 
 button:hover,
 .source-link:hover {
   color: #fff;
-  background: #4d419f;
+  background: #0b6b62;
   text-decoration: none;
 }
 
+/* ==================== 2. 页面公共布局 ==================== */
+
+/* 2.1 页头、站点标题和导航栏 */
 .site-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 0;
-  border-bottom: 1px solid #ddd9e7;
+  border-bottom: 1px solid #cfe5df;
 }
 
 .site-title {
   margin: 0;
-  font-size: 1.45rem;
+  font-size: 1.7rem;
 }
 
 .site-title a {
-  color: #302867;
+  color: #115e59;
 }
 
 .site-nav {
@@ -73,40 +83,50 @@ button:hover,
 }
 
 .site-nav a {
-  color: #47425c;
+  color: #365b57;
   font-weight: 600;
 }
 
+/* 2.2 主内容区域和页脚 */
 .page-content {
   padding: 2rem 0 3rem;
 }
 
 .site-footer {
   padding: 1.25rem 0;
-  border-top: 1px solid #ddd9e7;
-  color: #817c8d;
+  border-top: 1px solid #cfe5df;
+  color: #6b817e;
   font-size: 0.85rem;
   text-align: center;
 }
 
+/* ==================== 3. 公共面板与标题 ==================== */
+
+/* 3.1 页面中白色面板的公共外观 */
 .panel {
   margin-bottom: 1.5rem;
   background: #fff;
-  border: 1px solid #e4e1ed;
+  border: 1px solid #d8ebe6;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgb(48 40 103 / 5%);
   overflow: hidden;
+  box-shadow: 0 4px 16px rgb(15 118 110 / 6%);
 }
 
-.catalog-panel {
+.catalog-panel,
+.related-panel,
+.search-panel,
+.search-results {
   padding-bottom: 1.5rem;
 }
 
+/* 3.2 面板标题区域及说明文字 */
 .section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 1.25rem 1.5rem;
+}
+
+.catalog-panel > .section-heading,
+.search-panel > .section-heading {
+  text-align: center;
 }
 
 .section-heading h2,
@@ -114,15 +134,23 @@ button:hover,
   margin: 0;
 }
 
+.section-heading h2 {
+  font-size: 1.7rem;
+}
+
 .section-heading p,
 .eyebrow,
 .search-tip {
-  color: #777286;
+  color: #647d79;
 }
 
+/* ==================== 4. 列表页辅助元素 ==================== */
+
+/* 4.1 歌手列表的首字母筛选 */
 .alphabet {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.35rem;
   padding: 0 1.5rem 1rem;
 }
@@ -130,25 +158,31 @@ button:hover,
 .alphabet a {
   min-width: 1.8rem;
   padding: 0.2rem 0.4rem;
-  border: 1px solid #dcd7e8;
+  border: 1px solid #c9e1dc;
   border-radius: 4px;
   font-size: 0.85rem;
+  font-weight: 600;
   text-align: center;
 }
 
 .alphabet a.active {
   color: #fff;
-  background: #6556c7;
-  border-color: #6556c7;
+  background: #0f8a7d;
+  border-color: #0f8a7d;
 }
 
+/* 4.2 没有数据或评论时的提示文字 */
 .empty-message {
     padding: 1.5rem;
-    color: #777286;
+    color: #647d79;
     text-align: center;
 }
 
-.detail-panel {
+/* ==================== 5. 歌曲与歌手详情页 ==================== */
+
+/* 5.1 详情面板、基本信息布局和图片 */
+.detail-panel,
+.comments-panel {
   padding: 1.5rem;
 }
 
@@ -159,14 +193,19 @@ button:hover,
   align-items: center;
 }
 
-.cover-image {
-  width: 100%;
+.cover-image,
+.result-card img {
   aspect-ratio: 1;
-  border-radius: 10px;
   object-fit: cover;
-  background: #eeeaf3;
+  background: #e5f3f0;
 }
 
+.cover-image {
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* 5.2 详情标题、类型提示和来源链接 */
 .detail-summary h2 {
   margin: 0 0 0.75rem;
   font-size: 2rem;
@@ -182,15 +221,19 @@ button:hover,
 .source-link {
   display: inline-block;
   margin-top: 0.6rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.82rem;
 }
 
+/* 5.3 歌词与歌手简介所在的正文区域 */
 .detail-section {
   margin-top: 1.75rem;
   padding-top: 1.25rem;
-  border-top: 1px solid #eeeaf3;
+  border-top: 1px solid #e3f0ed;
 }
 
-.detail-section h3 {
+.detail-section h3,
+.comments-panel > h2 {
   margin-top: 0;
 }
 
@@ -202,21 +245,12 @@ button:hover,
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font-family: inherit;
-  background: #f8f7fb;
+  background: #f4faf8;
 }
 
-.introduction {
-  white-space: normal;
-}
+/* ==================== 6. 评论功能 ==================== */
 
-.comments-panel {
-  padding: 1.5rem;
-}
-
-.comments-panel > h2 {
-  margin-top: 0;
-}
-
+/* 6.1 评论输入表单 */
 .comment-form {
   display: grid;
   gap: 0.6rem;
@@ -225,9 +259,8 @@ button:hover,
 
 .comment-form textarea {
   width: 100%;
-  min-height: 7rem;
   padding: 0.75rem;
-  border: 1px solid #cbc6d8;
+  border: 1px solid #bcd8d2;
   border-radius: 7px;
   resize: vertical;
 }
@@ -236,14 +269,16 @@ button:hover,
   justify-self: start;
 }
 
+/* 6.2 表单错误提示 */
 .errorlist {
   margin: 0;
   color: #b42318;
 }
 
+/* 6.3 单条评论的内容和时间信息 */
 .comment {
   padding: 1rem 0;
-  border-top: 1px solid #eeeaf3;
+  border-top: 1px solid #e3f0ed;
 }
 
 .comment p {
@@ -255,10 +290,11 @@ button:hover,
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  color: #777286;
+  color: #647d79;
   font-size: 0.85rem;
 }
 
+/* 6.4 删除评论按钮 */
 .danger-button {
   padding: 0.25rem 0.6rem;
   background: #b42318;
@@ -268,65 +304,50 @@ button:hover,
   background: #8f1c13;
 }
 
-.related-panel {
-  padding-bottom: 1.5rem;
-}
+/* ==================== 7. 列表与搜索结果卡片 ==================== */
 
+/* 7.1 卡片网格布局 */
 .result-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, 176px);
+  justify-content: center;
   gap: 1rem;
   padding: 0 1.5rem;
 }
 
+/* 7.2 单张卡片、图片和悬停状态 */
 .result-card {
   display: grid;
-  gap: 0.55rem;
-  color: #29263a;
-  font-weight: 600;
-}
-
-.result-card img {
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: 8px;
-  object-fit: cover;
-  background: #eeeaf3;
-}
-
-.result-grid {
-  grid-template-columns: repeat(auto-fill, 176px);
-  justify-content: center;
-}
-
-.result-card {
   width: 176px;
   min-width: 0;
   padding: 0.75rem;
-  border: 1px solid #e4e1ed;
+  border: 1px solid #d8ebe6;
   border-radius: 10px;
+  gap: 0.55rem;
+  color: #263b38;
+  font-weight: 600;
   text-align: center;
   background: #fff;
-}
-
-.result-card:hover {
-  box-shadow: 0 5px 14px rgb(48 40 103 / 12%);
-  text-decoration: none;
 }
 
 .result-card img {
   width: 150px;
   height: 150px;
+  border-radius: 8px;
+}
+
+.result-card:hover {
+  text-decoration: none;
+  box-shadow: 0 5px 14px rgb(15 118 110 / 13%);
 }
 
 .result-card span {
   overflow-wrap: anywhere;
 }
 
-.search-panel {
-  padding-bottom: 1.5rem;
-}
+/* ==================== 8. 搜索区域 ==================== */
 
+/* 8.1 搜索表单的整体布局 */
 .search-form {
   display: grid;
   grid-template-columns: minmax(220px, 1fr) auto auto;
@@ -340,54 +361,72 @@ button:hover,
   gap: 0.35rem;
 }
 
+/* 8.2 关键词输入框、搜索类型和按钮 */
 .search-keyword input {
   width: 100%;
   padding: 0.55rem 0.7rem;
-  border: 1px solid #cbc6d8;
+  border: 1px solid #bcd8d2;
   border-radius: 6px;
+}
+
+.search-keyword input,
+.search-type label,
+.search-form button {
+  font-size: 1.1rem;
+}
+
+.search-keyword input,
+.search-form button,
+.search-type {
+  height: 3rem;
 }
 
 .search-type > div {
   display: flex;
+  align-items: center;
   gap: 0.75rem;
+  height: 100%;
 }
 
 .search-type label {
   white-space: nowrap;
 }
 
-.search-results {
-  padding-bottom: 1.5rem;
-}
-
+/* 8.3 搜索结果之外的操作提示 */
 .search-tip {
   text-align: center;
 }
 
+/* ==================== 9. 分页区域 ==================== */
+
+/* 9.1 页码链接、当前页和页数状态 */
 .pagination {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.75rem;
   margin: 1.25rem 0;
 }
 
 .pagination a,
 .pagination strong {
   padding: 0.3rem 0.65rem;
-  border: 1px solid #dcd7e8;
+  border: 1px solid #c9e1dc;
   border-radius: 5px;
+  font-weight: 600;
 }
 
 .pagination strong {
   color: #fff;
-  background: #6556c7;
+  background: #0f8a7d;
 }
 
 .page-status {
-  color: #777286;
+  color: #647d79;
 }
 
+/* 9.2 输入页码跳转 */
 .page-jump {
   display: flex;
   align-items: center;
@@ -399,7 +438,10 @@ button:hover,
   padding: 0.3rem;
 }
 
+/* ==================== 10. 小屏幕响应式布局 ==================== */
+
 @media (max-width: 680px) {
+  /* 10.1 页面边距、页头、详情和搜索布局 */
   body {
     padding: 0 0.9rem;
   }
@@ -422,6 +464,7 @@ button:hover,
     grid-template-columns: 1fr;
   }
 
+  /* 10.2 面板和标题的横向内边距 */
   .section-heading,
   .detail-panel,
   .comments-panel {
@@ -429,6 +472,7 @@ button:hover,
     padding-left: 1rem;
   }
 
+  /* 10.3 小屏幕下的卡片和图片尺寸 */
   .result-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 176px));
     padding: 0 1rem;
