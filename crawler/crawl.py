@@ -135,6 +135,5 @@ def main() -> None:
             print("保存成功，请在网站中查看这位歌手。")
         return
 
-    print("\n爬取结束")
     print(f"歌手: {artist_count}/{TARGET_ARTIST_COUNT}")
     print(f"歌曲: {song_count}/{TARGET_SONG_COUNT}")

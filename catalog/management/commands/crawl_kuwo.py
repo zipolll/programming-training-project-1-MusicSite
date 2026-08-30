@@ -10,3 +10,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         main()
+        self.stdout.write(self.style.SUCCESS("本次爬取结束。"))
