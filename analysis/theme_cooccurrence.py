@@ -68,7 +68,7 @@ def draw_chart(matrix: pd.DataFrame, output_path: Path) -> None:
     color_map = plt.colormaps["YlOrRd"].copy()
     color_map.set_bad("#E6E6E6")
     figure, axis = plt.subplots(figsize=(7, 6))
-    image = axis.imshow(color_values.values, cmap=color_map, vmin=0, vmax=0.4)
+    image = axis.imshow(color_values.values, cmap=color_map, vmin=0, vmax=0.4)  # 把pandas DataFrame 转换为二维数组用于绘图
     axis.set_title("主题共现系数")
     axis.set_xticks(range(len(matrix.columns)), matrix.columns)
     axis.set_yticks(range(len(matrix.index)), matrix.index)
@@ -81,9 +81,9 @@ def draw_chart(matrix: pd.DataFrame, output_path: Path) -> None:
                 "—" if row_index == column_index else f"{value:.2f}",
                 ha="center",
                 va="center",
-                color="white" if row_index != column_index and value >= 0.3 else "black",
+                color="white" if row_index != column_index and value >= 0.3 else "black",  # 根据值的大小选择文字颜色，以保证在热力图上可读
             )
-    figure.colorbar(image, ax=axis, fraction=0.046, pad=0.04)
+    figure.colorbar(image, ax=axis, fraction=0.046, pad=0.04)  # 添加颜色条以显示热力图的数值对应关系，并控制其位置和大小
     figure.tight_layout()
     figure.savefig(output_path, dpi=180, bbox_inches="tight")
     plt.close(figure)

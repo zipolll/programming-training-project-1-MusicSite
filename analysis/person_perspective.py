@@ -112,6 +112,6 @@ def draw_chart(summary: pd.DataFrame, output_path: Path) -> None:
             ha="center",
             va="bottom",
         )
-    figure.tight_layout()
+    figure.tight_layout()  # 自动调整图中各组件之间的布局和间距
     figure.savefig(output_path, dpi=180, bbox_inches="tight")
     plt.close(figure)

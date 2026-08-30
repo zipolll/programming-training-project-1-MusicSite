@@ -18,4 +18,5 @@ analysis/output/*
 /runserver.bat
 /runcrawler.bat
 /runanalyze.bat
+/runtests.bat
 /analysis/output/
