@@ -11,12 +11,3 @@ data/
 analysis/output/*
 !analysis/output/.gitkeep
 !analysis/output/*.png
-**/test*.py
-**/*_test.py
-**/*_tests.py
-**/tests/
-/runserver.bat
-/runcrawler.bat
-/runanalyze.bat
-/runtests.bat
-/analysis/output/
