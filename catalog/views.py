@@ -77,7 +77,7 @@ class ArtistListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["initial"] = self.request.GET.get("initial", "").upper()
-        context["alphabet"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        context["alphabet"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#"
         return context
 
 

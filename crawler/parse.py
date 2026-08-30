@@ -9,10 +9,10 @@ def parse_artist(artist_id: str, info_html: str) -> dict:
     """从歌手资料页中提取姓名、简介和图片。"""
     info_soup = BeautifulSoup(info_html, "html.parser")
 
-    name_tag = info_soup.select_one(".name_out .name")# 寻找类name_out下的name 类
-    introduction_tag = info_soup.select_one(".child_view > p.info")
+    name_tag = info_soup.select_one(".name_out .name")  # 寻找类name_out下的name 类
+    introduction_tag = info_soup.select_one(".child_view > p.info")  # 寻找类child_view下的直接子代p.info标签
     basic_info_tag = info_soup.select_one(".child_view > .list_info")
-    image_match = re.search(r'pic300:"([^"]+)"', info_html) # 图片返回格式不够规则，用正则表达式匹配
+    image_match = re.search(r'pic300:"([^"]+)"', info_html) # 图片返回格式不够规则，用正则表达式匹配（直接使用img标签会得到默认占位图）
 
     name = (
         " ".join(name_tag.get_text(" ", strip=True).split())
@@ -33,7 +33,7 @@ def parse_artist(artist_id: str, info_html: str) -> dict:
         if image_match
         else ""
     )
-    if not image_url.rsplit("/", 1)[-1]:
+    if image_url.endswith("/"):
         image_url = ""
 
     return {
@@ -70,14 +70,13 @@ def parse_song(
         )
 
     image_url = song_item.get("pic") or ""
-    if not image_url.rsplit("/", 1)[-1]:
-        image_url = ""
+    if image_url.endswith("/"):
+        image_url = ""  # 图片路径无效时置空
 
     return {
         "external_id": song_id,
         "title": song_item.get("name") or "",
         "artist_id": artist_id,
-        "album": song_item.get("album") or "",
         "lyrics": "\n".join(lyric_lines),
         "image_url": image_url,
         "source_comments": source_comments,

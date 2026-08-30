@@ -35,6 +35,7 @@ def get_saved_ids() -> tuple[set[str], set[str]]:
 
 def save_artist(artist_data: dict, artist_songs: list[dict]) -> None:
     """把一位歌手、歌曲和来源评论完整写入数据库。"""
+    # 使用数据库事务确保歌手及其歌曲和评论的一次性写入。
     with transaction.atomic():
         artist, _ = Artist.objects.update_or_create(
             source_url=artist_data["source_url"],

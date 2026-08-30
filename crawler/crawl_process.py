@@ -92,7 +92,8 @@ def crawl_artist_info(artist_id: str, prefix: str) -> dict:
     artist = parse_artist(artist_id, info_html)
 
     if not prefix and artist["name"]:
-        prefix = lazy_pinyin(artist["name"])[0][0].upper() # 便于指定url爬取模式下更新首字母
+        detected_prefix = lazy_pinyin(artist["name"])[0][0].upper()
+        prefix = detected_prefix if detected_prefix in LETTERS else "#"
     artist["prefix"] = prefix
     return artist
 
