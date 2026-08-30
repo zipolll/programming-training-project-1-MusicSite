@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.templatetags.static import static
 from django.urls import reverse
 
+from .management.commands.crawl_kuwo import get_saved_ids, save_artist
 from .models import Artist, Comment, Song
 
 
@@ -292,3 +293,70 @@ class CatalogViewTest(TestCase):
             {"query": "目标", "search_type": "artist"},
         )
         self.assertEqual(list(response.context["page_obj"]), expected)
+
+
+class CrawlerDatabaseTest(TestCase):
+    def test_save_artist_and_read_saved_ids(self) -> None:
+        artist_data = {
+            "name": "测试歌手",
+            "prefix": "C",
+            "introduction": "测试简介",
+            "image_url": "https://example.com/artist.jpg",
+            "source_url": "https://www.kuwo.cn/singer_detail/336",
+        }
+        artist_songs = [
+            {
+                "external_id": "123",
+                "title": "测试歌曲",
+                "lyrics": "第一行\n第二行",
+                "image_url": "https://example.com/song.jpg",
+                "source_url": "https://www.kuwo.cn/play_detail/123",
+                "source_comments": [
+                    {
+                        "content": "测试评论",
+                        "created_at": "2026-08-20 12:00:00",
+                    }
+                ],
+            }
+        ]
+
+        save_artist(artist_data, artist_songs)
+        save_artist(artist_data, artist_songs)
+        completed_artist_ids, saved_song_ids = get_saved_ids()
+
+        self.assertEqual(Artist.objects.count(), 1)
+        self.assertEqual(Song.objects.count(), 1)
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(completed_artist_ids, {"336"})
+        self.assertEqual(saved_song_ids, {"123"})
+
+    def test_save_artist_rolls_back_incomplete_data(self) -> None:
+        artist_data = {
+            "name": "失败歌手",
+            "prefix": "S",
+            "introduction": "测试事务",
+            "image_url": "",
+            "source_url": "https://www.kuwo.cn/singer_detail/337",
+        }
+        artist_songs = [
+            {
+                "external_id": "124",
+                "title": "失败歌曲",
+                "lyrics": "歌词",
+                "image_url": "",
+                "source_url": "https://www.kuwo.cn/play_detail/124",
+                "source_comments": [
+                    {
+                        "content": "时间格式错误",
+                        "created_at": "错误时间",
+                    }
+                ],
+            }
+        ]
+
+        with self.assertRaises(ValueError):
+            save_artist(artist_data, artist_songs)
+
+        self.assertEqual(Artist.objects.count(), 0)
+        self.assertEqual(Song.objects.count(), 0)
+        self.assertEqual(Comment.objects.count(), 0)
