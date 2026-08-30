@@ -59,7 +59,9 @@ Project1/
 - `fetch.py`：使用随机 User-Agent 发送请求并缓存原始响应
 - `parse.py`：解析歌手、歌曲、歌词和热门评论
 - `crawl_process.py`：获取歌手资料、歌曲列表和歌曲详细信息
-- `catalog/management/commands/crawl_kuwo.py`：控制爬取流程并直接写入数据库
+- `crawl.py`：处理歌手主页 URL 并控制完整爬取流程
+- `storage.py`：读取爬取进度并把结果写入数据库
+- `catalog/management/commands/crawl_kuwo.py`：Django命令入口
 
 ### `templates`
 
@@ -81,17 +83,13 @@ Project1/
 安装依赖后运行：
 
 ```powershell
-venv\Scripts\python.exe -B manage.py crawl_kuwo
+.venv\Scripts\python.exe -B manage.py crawl_kuwo
 ```
 
 程序支持两种模式：
 
 - 直接回车：按照 A-Z 分页获取歌手，每位歌手最多保存 10 首有效歌曲，并从数据库中的已有数据继续。
-- 输入酷我歌手主页 URL：爬取指定歌手并写入数据库；已经存在时直接跳过。例如：
-
-```text
-https://kuwo.cn/newh5/artist/artistDetail?id=336
-```
+- 输入酷我歌手主页 URL：爬取指定歌手并写入数据库；已经存在时直接跳过
 
 爬虫保存歌手姓名、简介、图片 URL 和来源链接，以及歌曲名称、无时间轴歌词、图片 URL、来源链接和最多 3 条热门评论。图片只保存 URL，不下载音频或视频。
 

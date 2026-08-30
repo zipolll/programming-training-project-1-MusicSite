@@ -1,7 +1,6 @@
 """酷我音乐具体爬取过程"""
 
-import re
-from urllib.parse import parse_qs, urlencode, urlparse
+from urllib.parse import urlencode
 from pypinyin import lazy_pinyin
 from .config import (
     ARTISTS_PER_PAGE,
@@ -18,20 +17,6 @@ from .config import (
 )
 from .fetch import fetch
 from .parse import parse_artist, parse_song
-
-
-def get_single_artist_id(artist_url: str) -> str:
-    """从酷我歌手主页 URL 中提取歌手 ID。"""
-    parsed_url = urlparse(artist_url) # 用于拆分解析 URL
-    query_id = parse_qs(parsed_url.query).get("id", [""])[0]
-    path_match = re.search(r"/(\d+)/?$", parsed_url.path)
-
-    if query_id.isdigit():
-        return query_id
-    if path_match:
-        return path_match.group(1)
-    return ""
-
 
 def get_artist_queue(artist_page: int) -> list[tuple[str, str]]:
     """取得当前页 A-Z 的歌手 ID。"""
