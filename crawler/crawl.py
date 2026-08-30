@@ -8,7 +8,7 @@ from crawler.config import TARGET_ARTIST_COUNT, TARGET_SONG_COUNT
 from crawler.crawl_process import (
     crawl_artist_info,
     crawl_artist_songs,
-    get_artist_queue,
+    crawl_artist_queue,
 )
 from crawler.storage import get_saved_ids, save_artist
 
@@ -26,7 +26,7 @@ def get_single_artist_id(artist_url: str) -> str:
     return ""
 
 
-def run_crawler() -> None:
+def main() -> None:
     """根据用户输入运行单个歌手或完整断点续爬流程。"""
     completed_artist_ids, saved_song_ids = get_saved_ids()
     artist_count = Artist.objects.count()
@@ -61,7 +61,7 @@ def run_crawler() -> None:
             if single_artist_id:
                 artist_queue = [("", single_artist_id)]
             else:
-                artist_queue = get_artist_queue(artist_page)
+                artist_queue = crawl_artist_queue(artist_page)
 
             if not artist_queue:
                 break

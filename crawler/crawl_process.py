@@ -18,7 +18,7 @@ from .config import (
 from .fetch import fetch
 from .parse import parse_artist, parse_song
 
-def get_artist_queue(artist_page: int) -> list[tuple[str, str]]:
+def crawl_artist_queue(artist_page: int) -> list[tuple[str, str]]:
     """取得当前页 A-Z 的歌手 ID。"""
     artist_queue = []
     for letter in LETTERS:
