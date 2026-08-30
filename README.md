@@ -93,7 +93,7 @@ venv\Scripts\python.exe -B manage.py crawl_kuwo
 https://kuwo.cn/newh5/artist/artistDetail?id=336
 ```
 
-爬虫保存歌手姓名、简介、图片 URL 和来源链接，以及歌曲名称、专辑、无时间轴歌词、图片 URL、来源链接和最多 3 条热门评论。图片只保存 URL，不下载音频或视频。
+爬虫保存歌手姓名、简介、图片 URL 和来源链接，以及歌曲名称、无时间轴歌词、图片 URL、来源链接和最多 3 条热门评论。图片只保存 URL，不下载音频或视频。
 
 原始接口响应缓存在 `data/raw/kuwo/`，处理后的歌手、歌曲和评论直接保存在 SQLite 数据库。数据库中的歌手和歌曲来源链接用于判断是否已经完成；程序中断后重新运行即可继续。
 

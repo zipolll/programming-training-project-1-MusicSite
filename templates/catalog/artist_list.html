@@ -16,7 +16,7 @@
         全部
       </a>
       {% for letter in alphabet %}
-        <a href="?initial={{ letter }}"{% if initial == letter %} class="active"{% endif %}>
+        <a href="?initial={{ letter|urlencode }}"{% if initial == letter %} class="active"{% endif %}>
           {{ letter }}
         </a>
       {% endfor %}
