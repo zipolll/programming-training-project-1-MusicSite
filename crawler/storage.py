@@ -1,6 +1,7 @@
 """读取爬取进度并把爬取结果保存到数据库。"""
 
 from datetime import datetime
+from typing import Any
 
 from django.db import transaction
 from django.utils import timezone
@@ -21,11 +22,13 @@ def get_saved_ids() -> tuple[set[str], set[str]]:
         song_id = source_url.rsplit("/", 1)[-1]
         if song_id.isdigit():
             saved_song_ids.add(song_id)
-
     return completed_artist_ids, saved_song_ids
 
 
-def save_artist(artist_data: dict, artist_songs: list[dict]) -> None:
+def save_artist(
+    artist_data: dict[str, Any],
+    artist_songs: list[dict[str, Any]],
+) -> None:
     """把一位歌手、歌曲和来源评论完整写入数据库。"""
     with transaction.atomic():
         artist, _ = Artist.objects.update_or_create(

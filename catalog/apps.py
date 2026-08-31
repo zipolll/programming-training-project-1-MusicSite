@@ -1,3 +1,5 @@
+"""配置歌曲目录 Django 应用。"""
+
 from django.apps import AppConfig
 
 

@@ -1,7 +1,10 @@
-"""酷我音乐具体爬取过程"""
+"""实现酷我音乐的具体爬取过程。"""
 
+from typing import Any
 from urllib.parse import urlencode
+
 from pypinyin import lazy_pinyin
+
 from .config import (
     ARTISTS_PER_PAGE,
     COMMENTS_PER_SONG,
@@ -17,6 +20,7 @@ from .config import (
 )
 from .fetch import fetch
 from .parse import parse_artist, parse_song
+
 
 def crawl_artist_queue(artist_page: int) -> list[tuple[str, str]]:
     """取得当前页 A-Z 的歌手 ID。"""
@@ -35,18 +39,19 @@ def crawl_artist_queue(artist_page: int) -> list[tuple[str, str]]:
             KUWO_RAW_DATA_DIR
             / "artist_lists"
             / f"{letter}_{artist_page}.json"
-        ) # 构造用于存放artist列表的缓存文件路径，同一首字母且同一页的歌手列表会存放在同一个缓存文件中
+        )  # 构造用于存放artist列表的缓存文件路径，同一首字母且同一页的歌手列表会存放在同一个缓存文件中
         list_data = fetch(list_url, list_cache)
         artist_items = list_data["data"]["artistList"] or []
+
         for item in artist_items:
             artist_queue.append((letter, str(item["id"])))
     return artist_queue
 
 
 def crawl_song(
-    song_item: dict,
+    song_item: dict[str, Any],
     artist_id: str,
-) -> dict:
+) -> dict[str, Any]:
     """取得一首歌曲的歌词和热门评论。"""
     song_id = str(song_item["rid"])
 
@@ -60,7 +65,6 @@ def crawl_song(
     )
     comment_cache = KUWO_RAW_DATA_DIR / "comments" / f"{song_id}.json"
     comment_data = fetch(comment_url, comment_cache)
-
     return parse_song(
         song_item,
         lyric_data,
@@ -68,7 +72,8 @@ def crawl_song(
         artist_id,
     )
 
-def crawl_artist_info(artist_id: str, prefix: str) -> dict:
+
+def crawl_artist_info(artist_id: str, prefix: str) -> dict[str, Any]:
     """使用歌手 ID 取得基本资料。"""
     info_url = KUWO_ARTIST_INFO_URL.format(artist_id=artist_id)
     info_cache = KUWO_RAW_DATA_DIR / "artists" / f"{artist_id}_info.html"
@@ -79,13 +84,15 @@ def crawl_artist_info(artist_id: str, prefix: str) -> dict:
     if not prefix and artist["name"]:
         detected_prefix = lazy_pinyin(artist["name"])[0][0].upper()
         prefix = detected_prefix if detected_prefix in LETTERS else "#"
+
     artist["prefix"] = prefix
     return artist
+
 
 def crawl_artist_songs(
     artist_id: str,
     saved_song_ids: set[str],
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """取得一位歌手最多十首有效歌曲。"""
     artist_songs = []
     song_page = 1
@@ -112,17 +119,21 @@ def crawl_artist_songs(
         song_items = song_list_data["data"]["list"] or []
         if not song_items:
             break
+
         for item in song_items:
             song_id = str(item["rid"])
             if song_id in saved_song_ids:
                 continue
+
             song = crawl_song(item, artist_id)
             if song["title"] and song["lyrics"]:
                 artist_songs.append(song)
+
             if len(artist_songs) == SONGS_PER_ARTIST:
                 break
-    
+
         if len(song_items) < SONGS_PER_PAGE:
-            break # 歌曲数量已不足
+            break  # 歌曲数量已不足
+
         song_page += 1
     return artist_songs

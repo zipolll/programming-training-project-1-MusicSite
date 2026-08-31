@@ -8,6 +8,6 @@ from analysis.analyze import main
 class Command(BaseCommand):
     help = "运行音乐数据分析并生成CSV和PNG文件"
 
-    def handle(self, *args, **options):
+    def handle(self, *args: object, **options: object) -> None:
         main()
         self.stdout.write(self.style.SUCCESS("数据分析完成。"))

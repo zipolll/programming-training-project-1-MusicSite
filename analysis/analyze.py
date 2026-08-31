@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-# 只能通过 manage.py analyze_music 来执行该脚本
-if __name__ == "__main__":
-    raise SystemExit("请使用 .venv\\Scripts\\python.exe manage.py analyze_music")
+import pandas as pd
 
 from analysis.artist_creation import (
     build_artist_metrics,
@@ -29,9 +27,15 @@ from analysis.theme_cooccurrence import (
 )
 
 
-def print_data_summary( valid_song_metrics) -> None:
+# 只能通过 manage.py analyze_music 来执行该脚本
+if __name__ == "__main__":
+    raise SystemExit("请使用 .venv\\Scripts\\python.exe manage.py analyze_music")
+
+
+def print_data_summary(valid_song_metrics: pd.DataFrame) -> None:
     """输出三个模块共用的数据质量信息。"""
     print(f"进入分析的有效中文歌曲：{len(valid_song_metrics)}")
+
 
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

@@ -1,10 +1,11 @@
-"""集中保存酷我音乐爬虫的配置"""
+"""集中保存酷我音乐爬虫的配置。"""
 
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent # 获取项目根目录
-KUWO_RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw" / "kuwo" # 获取酷我音乐原始数据存储目录
+PROJECT_ROOT = Path(__file__).resolve().parent.parent  # 获取项目根目录
+# 获取酷我音乐原始数据存储目录
+KUWO_RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw" / "kuwo"
 
 KUWO_ARTIST_LIST_URL = "https://wapi.kuwo.cn/api/www/artist/artistInfo"
 KUWO_ARTIST_INFO_URL = "https://www.kuwo.cn/singer_detail/{artist_id}/info"

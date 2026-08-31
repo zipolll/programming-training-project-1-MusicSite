@@ -1,8 +1,9 @@
-"""把歌手、歌曲和评论注册到 Django 自带的后台，方便调试"""
+"""把歌手、歌曲和评论注册到 Django 自带的后台，方便调试。"""
 
 from django.contrib import admin
 
 from .models import Artist, Comment, Song
+
 
 # 管理员系统中可查询歌手、歌曲
 @admin.register(Artist)

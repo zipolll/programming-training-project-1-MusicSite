@@ -1,6 +1,7 @@
 """负责根据地址找到对应函数。"""
 
 from django.urls import path
+
 from . import views
 
 
@@ -11,7 +12,7 @@ urlpatterns = [
     path(
         "songs/<int:song_id>/",
         views.SongDetailView.as_view(),
-        name="song_detail", # 路由别名
+        name="song_detail",  # 路由别名
     ),
     path(
         "songs/<int:song_id>/comments/<int:comment_id>/delete/",

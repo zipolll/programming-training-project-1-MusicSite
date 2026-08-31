@@ -1,12 +1,16 @@
 """视图模块，实现歌曲和歌手的展示、评论和搜索功能。"""
 
 from time import perf_counter
+from typing import Any
+
 from django.core.paginator import Paginator
 from django.db.models import Case, IntegerField, Q, Value, When
+from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView
+
 from .forms import CommentForm, SearchForm
 from .models import Artist, Comment, Song
 
@@ -25,17 +29,22 @@ class SongDetailView(DetailView):
     context_object_name = "song"
     pk_url_kwarg = "song_id"
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Song]:
         """在查询歌曲时同时取得歌手和评论，避免展示时再次查询。"""
         return Song.objects.select_related("artist").prefetch_related("comments")
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """在上下文中加入评论表单。"""
         context = super().get_context_data(**kwargs)
         context["comment_form"] = CommentForm()
         return context
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
+    ) -> HttpResponse:
         """处理评论表单提交。"""
         self.object = self.get_object()
         form = CommentForm(request.POST)
@@ -50,13 +59,14 @@ class SongDetailView(DetailView):
         return self.render_to_response(context)
 
 
-@require_POST # 限制下方函数只能通过 POST 方法访问，禁止 GET 方法访问。
+@require_POST  # 限制下方函数只能通过 POST 方法访问，禁止 GET 方法访问。
 def delete_comment(
     request: HttpRequest,
     song_id: int,
     comment_id: int,
 ) -> HttpResponse:
-    comment = get_object_or_404(Comment, id=comment_id, song_id=song_id) # 从整个类中查找，确保评论存在且属于指定歌曲
+    # 从整个类中查找，确保评论存在且属于指定歌曲
+    comment = get_object_or_404(Comment, id=comment_id, song_id=song_id)
     comment.delete()
     return redirect("catalog:song_detail", song_id=song_id)
 
@@ -67,14 +77,14 @@ class ArtistListView(ListView):
     template_name = "catalog/artist_list.html"
     paginate_by = 20
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Artist]:
         artists = Artist.objects.all()
         initial = self.request.GET.get("initial")
         if initial:
             artists = artists.filter(prefix=initial.upper())
         return artists
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["initial"] = self.request.GET.get("initial", "").upper()
         context["alphabet"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#"
@@ -94,12 +104,12 @@ def search(request: HttpRequest) -> HttpResponse:
     form = SearchForm(request.GET or None)
     page_obj = None
     result_count = 0
-    elapsed_time = None # 记录后端查询时间，单位为秒。
+    elapsed_time = None  # 记录后端查询时间，单位为秒。
 
     if form.is_valid():
-        query = form.cleaned_data["query"] # 获取用户输入的搜索关键词
+        query = form.cleaned_data["query"]  # 获取用户输入的搜索关键词
         search_type = form.cleaned_data["search_type"]
-        start_time = perf_counter() # 从此处开始计时
+        start_time = perf_counter()  # 从此处开始计时
 
         if search_type == "song":
             results = Song.objects.select_related("artist").filter(
@@ -115,7 +125,7 @@ def search(request: HttpRequest) -> HttpResponse:
                     When(artist__name__istartswith=query, then=Value(5)),
                     When(artist__name__icontains=query, then=Value(6)),
                     default=Value(7),
-                    output_field=IntegerField(), # 结果当作整数处理
+                    output_field=IntegerField(),  # 结果当作整数处理
                 )
             ).order_by("search_rank", "title", "id")
         else:
@@ -136,7 +146,6 @@ def search(request: HttpRequest) -> HttpResponse:
         result_count = paginator.count
         page_obj.object_list = list(page_obj.object_list)  # 利用 list() 强制执行查询，避免惰性查询影响计时。
         elapsed_time = perf_counter() - start_time
-
     return render(
         request,
         "catalog/search.html",

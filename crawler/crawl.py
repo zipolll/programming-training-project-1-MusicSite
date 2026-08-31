@@ -15,12 +15,13 @@ from crawler.storage import get_saved_ids, save_artist
 
 def get_single_artist_id(artist_url: str) -> str:
     """从酷我歌手主页 URL 中提取歌手 ID。"""
-    parsed_url = urlparse(artist_url) # 用于拆分解析 URL
+    parsed_url = urlparse(artist_url)  # 用于拆分解析 URL
     query_id = parse_qs(parsed_url.query).get("id", [""])[0]
     path_match = re.search(r"/(\d+)/?$", parsed_url.path)
 
     if query_id.isdigit():
         return query_id
+
     if path_match:
         return path_match.group(1)
     return ""
@@ -42,9 +43,11 @@ def main() -> None:
         if not single_artist_id:
             print("无法从 URL 中找到歌手 ID。")
             return
+
         if single_artist_id in completed_artist_ids:
             print("数据库中已经存在这位歌手，请直接在网站中查看。")
             return
+
     elif (
         artist_count >= TARGET_ARTIST_COUNT
         and song_count >= TARGET_SONG_COUNT
@@ -85,6 +88,7 @@ def main() -> None:
                     completed_artist_ids.add(current_artist_id)
                     for song in artist_songs:
                         saved_song_ids.add(song["external_id"])
+
                     artist_count += 1
                     song_count += len(artist_songs)
                     single_artist_saved = True

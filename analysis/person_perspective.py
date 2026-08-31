@@ -31,6 +31,7 @@ def count_persons(text: str) -> dict[str, int]:
         result[person] = len(matched_words)
     return result
 
+
 def get_dominant_person(person_counts: dict[str, int]) -> str:
     """根据出现次数判断歌词的主导人称。"""
     highest_count = max(person_counts.values())
@@ -41,6 +42,7 @@ def get_dominant_person(person_counts: dict[str, int]) -> str:
     for person, count in person_counts.items():
         if count == highest_count:
             leaders.append(person)
+
     if len(leaders) > 1:
         return "混合人称"
     return f"{leaders[0]}主导"
@@ -51,12 +53,14 @@ def build_person_metrics(song_metrics: pd.DataFrame) -> pd.DataFrame:
     result = song_metrics.copy()
     for person in PERSON_WORDS:
         result[f"{person}_次数"] = 0
+
     result["主导人称"] = ""
 
     for row_index, lyric_lines in result["real_lyrics"].items():
         person_counts = count_persons("\n".join(lyric_lines))
         for person, count in person_counts.items():
             result.at[row_index, f"{person}_次数"] = count
+
         result.at[row_index, "主导人称"] = get_dominant_person(person_counts)
     return result
 
@@ -88,6 +92,7 @@ def get_result(person_metrics: pd.DataFrame, output_dir: Path) -> pd.DataFrame:
                 "占比": song_count / total if total else 0,
             }
         )
+
     summary = pd.DataFrame(rows)
     summary.to_csv(
         output_dir / "person_perspective_summary.csv",
@@ -112,6 +117,7 @@ def draw_chart(summary: pd.DataFrame, output_path: Path) -> None:
             ha="center",
             va="bottom",
         )
+
     figure.tight_layout()  # 自动调整图中各组件之间的布局和间距
     figure.savefig(output_path, dpi=180, bbox_inches="tight")
     plt.close(figure)

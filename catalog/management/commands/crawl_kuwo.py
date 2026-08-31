@@ -8,6 +8,6 @@ from crawler.crawl import main
 class Command(BaseCommand):
     help = "爬取酷我音乐数据并直接保存到数据库"
 
-    def handle(self, *args, **options):
+    def handle(self, *args: object, **options: object) -> None:
         main()
         self.stdout.write(self.style.SUCCESS("本次爬取结束。"))

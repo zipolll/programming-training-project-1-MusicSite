@@ -2,6 +2,7 @@
 
 import re
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -20,13 +21,14 @@ def check_credit(metadata: list[str], credit_type: str, artist_name: str) -> boo
         if match:
             credit = match.group(2)
             normalized_artist = "".join(
-                re.findall(r"[A-Za-z0-9\u4e00-\u9fff]", artist_name) 
-            ).lower() # 去除姓名中的非字母数字汉字字符
+                re.findall(r"[A-Za-z0-9\u4e00-\u9fff]", artist_name)
+            ).lower()  # 去除姓名中的非字母数字汉字字符
             normalized_credit = "".join(
                 re.findall(r"[A-Za-z0-9\u4e00-\u9fff]", credit)
             ).casefold()
             return bool(normalized_artist) and normalized_artist == normalized_credit
     return False
+
 
 def add_credit_fields(song_metrics: pd.DataFrame) -> pd.DataFrame:
     """从每首歌的元数据中增加词曲署名和本人参与字段。"""
@@ -40,6 +42,7 @@ def add_credit_fields(song_metrics: pd.DataFrame) -> pd.DataFrame:
         axis=1,
     )
     return result
+
 
 def build_artist_metrics(song_metrics: pd.DataFrame) -> pd.DataFrame:
     """计算至少有五首歌曲且至少参与一项创作的歌手指标。"""
@@ -68,8 +71,8 @@ def build_artist_metrics(song_metrics: pd.DataFrame) -> pd.DataFrame:
                 "self_composer_rate": composer_rate,
             }
         )
-
     return pd.DataFrame(rows).sort_values("artist_name").reset_index(drop=True)
+
 
 def get_result(artist_metrics: pd.DataFrame, output_dir: Path) -> pd.DataFrame:
     """保存歌手明细，并返回和保存汇总结果。"""
@@ -99,6 +102,7 @@ def get_result(artist_metrics: pd.DataFrame, output_dir: Path) -> pd.DataFrame:
     )
     return result
 
+
 def draw_chart(artist_metrics: pd.DataFrame, output_path: Path) -> None:
     """用气泡散点图展示本人作词率与本人作曲率的关系。"""
     correlation = artist_metrics["self_lyric_rate"].corr(
@@ -124,9 +128,7 @@ def draw_chart(artist_metrics: pd.DataFrame, output_path: Path) -> None:
     axis.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
     axis.set_xlabel("本人作词率")
     axis.set_ylabel("本人作曲率")
-    axis.set_title(
-        f"本人作词率与作曲率的关系（r={correlation:.2f}）\n"
-    )
+    axis.set_title(f"本人作词率与作曲率的关系（r={correlation:.2f}）\n")
     axis.grid(alpha=0.25)
     figure.tight_layout()
     figure.savefig(output_path, dpi=180, bbox_inches="tight")

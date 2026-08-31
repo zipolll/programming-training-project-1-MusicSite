@@ -2,8 +2,12 @@
 
 import re
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 import pandas as pd
+
+from catalog.models import Song
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "analysis" / "output"
@@ -48,20 +52,19 @@ def clean_lyrics(title: str, lyrics: str) -> tuple[list[str], list[str]]:
             metadata.append(line)
         else:
             real_lyrics.append(line)
-        is_first_valid_line = False
 
+        is_first_valid_line = False
     return metadata, real_lyrics
 
 
 def load_data() -> pd.DataFrame:
     """使用Django ORM读取歌曲和歌手的基础字段。"""
-    from catalog.models import Song
-
     columns = ["id", "title", "lyrics", "artist_id", "artist__name"]
     songs = Song.objects.order_by("id").values(*columns)
     return pd.DataFrame.from_records(songs, columns=columns).rename(
         columns={"id": "song_id", "artist__name": "artist_name"}
     )
+
 
 def is_valid(row: pd.Series) -> bool:
     """判断一首歌是否满足公共分析条件。"""
@@ -77,11 +80,8 @@ def is_valid(row: pd.Series) -> bool:
     # 汉字在全部歌词字符中超过60%，就认为是中文歌。
     chinese_count = len(re.findall(r"[\u4e00-\u9fff]", lyrics_text))
     chinese_ratio = chinese_count / len(lyrics_text) if lyrics_text else 0
-    return (
-        not is_pure_music
-        and len(lines) >= 10
-        and chinese_ratio > 0.6
-    )
+    return not is_pure_music and len(lines) >= 10 and chinese_ratio > 0.6
+
 
 def build_song_metrics(data: pd.DataFrame) -> pd.DataFrame:
     """建立三个分析模块共用的基础歌曲数据。"""
@@ -98,8 +98,10 @@ def build_song_metrics(data: pd.DataFrame) -> pd.DataFrame:
                 "real_lyrics": real_lyrics,
             }
         )
+
     temp = pd.DataFrame(rows)
     return temp[temp.apply(is_valid, axis=1)]
+
 
 def configure_chinese_font() -> None:
     """设置图表使用的中文字体。"""
