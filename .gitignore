@@ -11,3 +11,5 @@ data/
 analysis/output/*
 !analysis/output/.gitkeep
 !analysis/output/*.png
+*.pdf
+*.zip
